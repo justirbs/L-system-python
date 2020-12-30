@@ -109,7 +109,10 @@ def equiturtle(axiome1, angle, taille):
     '*':'right(180)',
     '[':'positions.append([heading(), pos()])',
     ']':'h,p = positions.pop(-1)\nseth(h);pu();setpos(p);pd()',
-    'F':'fd('+ctaille
+    'F':'fd('+ctaille,
+    'R':'if r+dc<256: r+=dc;pencolor(r,g,b)',
+    'G':'if g+dc<256: g+=dc;pencolor(r,g,b)',
+    'B':'if b+dc<256: b+=dc;pencolor(r,g,b)'
     }
     for carac in axiome1:
         if carac in dico:
@@ -152,7 +155,7 @@ def afficheprog(axiome, taille, angle, regles, niveau):
 
 def write_program_to_file(axiome, taille, angle, regles, niveau, out_file=None):
     axiome2 = niv(axiome, regles, niveau)
-    code = "from turtle import *\npositions=[]\nscr = Screen()\ntracer(False)\n"
+    code = "from turtle import *\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\n"
     code += equiturtle(axiome2, angle, taille)
     code += "scr.update()\nexitonclick()\n"
 
