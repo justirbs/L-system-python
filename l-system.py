@@ -1,7 +1,7 @@
 from turtle import *
 from pprint import pprint
 from sys import exit, argv
-from random import random
+from random import random, randrange
 
 def error_out(id):
     if id == 0:
@@ -97,28 +97,51 @@ def ouvrirFichier(fichier) :
     axiome, angle, taille, niveau, regles = verifie(axiome, angle, taille, niveau, regles)
     return(axiome, angle, taille, niveau, regles)
 
-def equiturtle(axiome1, angle, taille):
-    axiome2=''
-    ctaille=str(taille)+")"
-    cangle=str(angle)+")"
-    dico={
-    'a':'pd();fd('+ctaille,
-    'b':'pu();fd('+ctaille,
-    '+':'right('+cangle,
-    '-':'left('+cangle,
-    '*':'right(180)',
-    '[':'positions.append([heading(), pos()])',
-    ']':'h,p = positions.pop(-1)\nseth(h);pu();setpos(p);pd()',
-    'F':'fd('+ctaille,
-    'R':'if r+dc<256: r+=dc;pencolor(r,g,b)',
-    'G':'if g+dc<256: g+=dc;pencolor(r,g,b)',
-    'B':'if b+dc<256: b+=dc;pencolor(r,g,b)'
-    }
-    for carac in axiome1:
-        if carac in dico:
-            axiome2+=dico[carac]
-            axiome2+=";\n"
-    return axiome2
+def advanced_command_maker(axiom, angle, length):
+    simple_commands = {
+            'a':lambda l,a: 'pd();fd({0})'.format(l),
+            'b':lambda l,a: 'pu();fd({0})'.format(l),
+            '+':lambda l,a: 'right({0})'.format(a),
+            '-':lambda l,a: 'left({0})'.format(a),
+            '*':lambda l,a: 'right(180)',
+            '[':lambda l,a: 'positions.append([heading(), pos(), thickness])',
+            ']':lambda l,a: 'h,p,t = positions.pop(-1)\nseth(h);pu();setpos(p);pd();thickness=t;pensize(thickness)',
+            'F':lambda l,a: 'fd({0})'.format(l),
+            'f':lambda l,a: 'pu();fd({0});pd()'.format(l),
+            'R':lambda l,a: 'if r+dc<256: r+=dc;pencolor(r,g,b)',
+            'G':lambda l,a: 'if g+dc<256: g+=dc;pencolor(r,g,b)',
+            'B':lambda l,a: 'if b+dc<256: b+=dc;pencolor(r,g,b)',
+            '~':lambda l,a: 'right({0})'.format(randrange(-a,a))
+            }
+    commands = ""
+    
+    lengths = []
+    i = 0
+    while i < len(axiom):
+        c = axiom[i]
+        if c == 'l':
+            if axiom[i+1] == '(':
+                length *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])
+                i += axiom[i+2:].index(')') + 1
+        elif c == 't':
+            if axiom[i+1] == '(':
+                angle *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])
+                i += axiom[i+2:].index(')') + 1
+        elif c == '!':
+            if axiom[i+1] == '(':
+                commands += 'thickness += int({0});pensize(thickness)\n'.format(axiom[i+2:i+2+axiom[i+2:].index(')')])
+                i += axiom[i+2:].index(')') + 1
+        elif c in simple_commands:
+            commands += simple_commands[c](length, angle) + '\n'
+            if c == '[':
+                lengths.append(length)
+            elif c == ']':
+                length = lengths.pop(-1)
+
+        i += 1
+
+    return commands
+
 
 def niv(axiome1, regles, niveau):
     if niveau==0:
@@ -140,23 +163,10 @@ def niv(axiome1, regles, niveau):
             axiome1 = axiomeniv
     return axiomeniv
 
-def afficheprog(axiome, taille, angle, regles, niveau):
-    axiome2 = (niv(axiome, regles, niveau))
-    print(axiome2)
-    print(regles)
-    commandes = equiturtle(axiome2, angle, taille)
-    print("from turtle import *")
-    print("positions=[]")
-    print("scr = Screen()")
-    print("tracer(False)")
-    print(commandes)
-    print("scr.update()")
-    print("exitonclick()")
-
 def write_program_to_file(axiome, taille, angle, regles, niveau, out_file=None):
     axiome2 = niv(axiome, regles, niveau)
-    code = "from turtle import *\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\n"
-    code += equiturtle(axiome2, angle, taille)
+    code = "from turtle import *\nfrom random import randrange\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\nthickness={0}\n".format(niveau)
+    code +=advanced_command_maker(axiome2, angle, taille)
     code += "scr.update()\nexitonclick()\n"
 
     if out_file:
