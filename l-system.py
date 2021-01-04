@@ -97,7 +97,45 @@ def ouvrirFichier(fichier) :
     axiome, angle, taille, niveau, regles = verifie(axiome, angle, taille, niveau, regles)
     return(axiome, angle, taille, niveau, regles)
 
+def hex_to_rgb(h):
+    s = '0123456789abcdef'
+    return [s.index(h[1]) * 16 + s.index(h[2]), s.index(h[3]) * 16 + s.index(h[4]), s.index(h[5]) * 16 + s.index(h[6])]
+
+def get_colors():
+    colors = []
+    with open("color.conf", "r") as f:
+        for line in f:
+            if line[0] == "#":
+                colors.append(hex_to_rgb(line.strip()))
+
+    return colors
+
+def create_blended_colors(blend_factor, args):
+    colors = args + [args[0]]
+    all_colors = []
+    for i in range(len(colors)-1):
+        c1, c2 = colors[i], colors[i+1]
+        d_red   = (c2[0] - c1[0]) / blend_factor
+        d_green = (c2[1] - c1[1]) / blend_factor
+        d_blue  = (c2[2] - c1[2]) / blend_factor
+        for s in range(blend_factor):
+            all_colors.append([int(c1[0] + d_red * s), int(c1[1] + d_green * s), int(c1[2] + d_blue * s)])
+
+
+    return all_colors
+
+
+def get_indexed_color(index, colors):
+    total_colors = len(colors)
+    color_index = index % total_colors
+
+    return colors[color_index]
+
+
+
 def advanced_command_maker(axiom, angle, length):
+    print(angle)
+    colors = create_blended_colors(10, get_colors())
     simple_commands = {
             'a':lambda l,a: 'pd();fd({0})'.format(l),
             'b':lambda l,a: 'pu();fd({0})'.format(l),
@@ -117,8 +155,18 @@ def advanced_command_maker(axiom, angle, length):
     
     lengths = []
     i = 0
+    depth = 0
+    depths = []
     while i < len(axiom):
         c = axiom[i]
+        if c in ['F', 'a', 'b']:
+            depth += 1
+            commands += 'pencolor({0})\n'.format(str(get_indexed_color(depth, colors)))
+        elif c == '[':
+            depths.append(depth)
+        elif c == ']':
+            depth = depths.pop(-1)
+
         if c == 'l':
             if axiom[i+1] == '(':
                 length *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])
@@ -147,7 +195,6 @@ def niv(axiome1, regles, niveau):
     if niveau==0:
         axiomeniv=axiome1
     else:
-        
         for i in range(niveau):
             axiomeniv = ''
             for carac in axiome1:
@@ -165,14 +212,14 @@ def niv(axiome1, regles, niveau):
 
 def write_program_to_file(axiome, taille, angle, regles, niveau, out_file=None):
     axiome2 = niv(axiome, regles, niveau)
-    code = "from turtle import *\nfrom random import randrange\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\nthickness={0}\n".format(niveau)
+    code = "from turtle import *\nfrom random import randrange\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\nthickness={0}\nht()\nscr.bgcolor(51,51,51)\n".format(niveau)
     code +=advanced_command_maker(axiome2, angle, taille)
     code += "scr.update()\nexitonclick()\n"
 
     if out_file:
         with open(out_file, "w+") as f:
             f.write(code)
-    print(code)
+    #print(code)
     exec(code)
 
 def nvRegles(regles) :
