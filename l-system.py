@@ -134,8 +134,8 @@ def get_indexed_color(index, colors):
 
 
 def advanced_command_maker(axiom, angle, length):
-    print(angle)
-    colors = create_blended_colors(10, get_colors())
+    color_mode = 1                                      # 0 == change with index 1 == change with dist
+    colors = create_blended_colors(50, get_colors())
     simple_commands = {
             'a':lambda l,a: 'pd();fd({0})'.format(l),
             'b':lambda l,a: 'pu();fd({0})'.format(l),
@@ -161,12 +161,11 @@ def advanced_command_maker(axiom, angle, length):
         c = axiom[i]
         if c in ['F', 'a', 'b']:
             depth += 1
-            commands += 'pencolor({0})\n'.format(str(get_indexed_color(depth, colors)))
         elif c == '[':
             depths.append(depth)
         elif c == ']':
             depth = depths.pop(-1)
-
+        
         if c == 'l':
             if axiom[i+1] == '(':
                 length *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])
@@ -179,6 +178,12 @@ def advanced_command_maker(axiom, angle, length):
             if axiom[i+1] == '(':
                 commands += 'thickness += int({0});pensize(thickness)\n'.format(axiom[i+2:i+2+axiom[i+2:].index(')')])
                 i += axiom[i+2:].index(')') + 1
+        elif c == 'i':
+            if color_mode == 0:
+                commands += 'pencolor({0})\n'.format(str(get_indexed_color(depth, colors)))
+            elif color_mode == 1:
+                x,y = 
+                commands += 'pencolor({0})\n'.format()
         elif c in simple_commands:
             commands += simple_commands[c](length, angle) + '\n'
             if c == '[':

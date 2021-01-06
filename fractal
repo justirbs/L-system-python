@@ -1,7 +1,5 @@
-axiome = "++++bbbbbbbbbbbbbbbbbbbbbbbbb--------aF"
-regles = 
-"F(0.5)=FFR-[-F+F+F]R+[+F-F-F]"
-"F(0.5)=FFB-[-F+F+F]G+[+F-F-F]"
-angle = 22
-niveau = 5
+axiome = "!(0.2)+++++++bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba-------F----F----F----F----F"
+regle = "F=F----F----F----------F++F----F"
+angle = 18
+niveau = 4
 taille = 10
