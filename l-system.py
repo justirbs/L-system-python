@@ -3,118 +3,58 @@ from pprint import pprint
 from sys import exit, argv
 from random import random, randrange
 
-def error_out(id):
-    if id == 0:
-        print("Axiome non define")
-        exit()
-    if id == 1:
-        print("Regle non define")
-        exit()
-    if id == 2:
-        print("Angle non define")
-        exit()
-    if id == 3:
-        print("Egale pas dans regle")
-        exit()
-    if id == 4:
-        print("Egale pas dans axiome")
-        exit()
-    if id == 5:
-        print("Egale pas dans angle")
-        exit()
-    if id == 6:
-        print("Egale pas dans taille")
-        exit()
-    if id == 7:
-        print("Egale pas dans niveau")
-        exit()
-    if id == 8:
-        print("angle n'est pas nombre")
-        exit()
-    if id == 9:
-        print("taille n'est pas nombre")
-        exit()
-    if id == 10:
-        print("niveau n'est pas nombre")
-        exit()
-    if id == 11:
-        print("le fichier d'entree n'est pas specificie")
-        exit()
-    if id == 12:
-        print("le fichier de sorttie n'est pas specificie")
-        exit()
+from Error_Handling import handle_errors
+from File_Handling import open_settings_file 
 
-def verifie(axiome, angle, taille, niveau, regles):
-    if not axiome:
-        error_out(0)
-    if not regles:
-        error_out(1)
-    else:
-        for r in regles:
-            if "=" not in r:
-                error_out(3)
-    if not angle:
-        error_out(2)
-    if not taille:
-        taille = 4
-    if not niveau:
-        niveau = 1
+START_CENTER = True
 
-    return axiome, angle, taille, niveau, regles
+START_CODE = """
+from turtle import *
+from random import randrange
+positions=[]
+scr = Screen()
+scr.colormode(255)
+tracer(False)
+r,g,b=0,0,0
+dc=1
+thickness={0}
+"""
+END_CODE = """
+scr.update()
+exitonclick()
+"""
 
-def ouvrirFichier(fichier) :
-    with open(fichier, "r") as f :
-        lines = f.readlines()
-    axiome, angle, taille, niveau, regles = None,None,None,None,None
-    for i, line in enumerate(lines):
-        if "axiome" in line :
-            if '=' not in line: error_out(4)
-            else: axiome = line.split("=")[1].replace('"', "").replace(" ", "").strip()
-        if "angle" in line :
-            if '=' not in line: error_out(5)
-            else:
-                try: angle = int(line.split("=")[1].replace(" ", ""))
-                except ValueError: error_out(8)
-        if "taille" in line :
-            if '=' not in line: error_out(6)
-            else:
-                try: taille = int(line.split("=")[1].replace(" ", ""))
-                except ValueError: error_out(9)
-        if "niveau" in line :
-            if '=' not in line: error_out(7)
-            else:
-                try: niveau = int(line.split("=")[1].replace(" ", ""))
-                except ValueError: error_out(10)
-        if "regle" in line and '"' in line :
-            regles = [line.partition("=")[2].replace('"', "").replace(" ", "").strip()]
-        if "regles" in line :
-            j = i+1
-            regles = []
-            while '"' in lines[j] :
-                regles.append(lines[j].replace('"', "").replace(" ", "").strip())
-                j += 1
+if START_CENTER:
+    START_CODE += """
+lt(90)
+w,h = screensize()
+pu()
+goto(0, -h+10)
+pd()
+"""
 
-    axiome, angle, taille, niveau, regles = verifie(axiome, angle, taille, niveau, regles)
-    return(axiome, angle, taille, niveau, regles)
+
+simple_commands = {
+        'a':lambda l,a: 'pd();fd({0})'.format(l),
+        'b':lambda l,a: 'pu();fd({0})'.format(l),
+        '+':lambda l,a: 'right({0})'.format(a),
+        '-':lambda l,a: 'left({0})'.format(a),
+        '*':lambda l,a: 'right(180)',
+        '[':lambda l,a: 'positions.append([heading(), pos(), thickness])',
+        ']':lambda l,a: 'h,p,t = positions.pop(-1)\nseth(h);pu();setpos(p);pd();thickness=t;pensize(thickness)',
+        'F':lambda l,a: 'fd({0})'.format(l),
+        'f':lambda l,a: 'pu();fd({0});pd()'.format(l),
+        'R':lambda l,a: 'if r+dc<256: r+=dc;pencolor(r,g,b)',
+        'G':lambda l,a: 'if g+dc<256: g+=dc;pencolor(r,g,b)',
+        'B':lambda l,a: 'if b+dc<256: b+=dc;pencolor(r,g,b)',
+        'r':lambda l,a: 'if r-dc>=0: r-=dc;pencolor(r,g,b)',
+        'g':lambda l,a: 'if g-dc>=0: g-=dc;pencolor(r,g,b)',
+        'b':lambda l,a: 'if b-dc>=0: b-=dc;pencolor(r,g,b)',
+        '~':lambda l,a: 'right({0})'.format(randrange(-a,a))
+        }
 
 def advanced_command_maker(axiom, angle, length):
-    simple_commands = {
-            'a':lambda l,a: 'pd();fd({0})'.format(l),
-            'b':lambda l,a: 'pu();fd({0})'.format(l),
-            '+':lambda l,a: 'right({0})'.format(a),
-            '-':lambda l,a: 'left({0})'.format(a),
-            '*':lambda l,a: 'right(180)',
-            '[':lambda l,a: 'positions.append([heading(), pos(), thickness])',
-            ']':lambda l,a: 'h,p,t = positions.pop(-1)\nseth(h);pu();setpos(p);pd();thickness=t;pensize(thickness)',
-            'F':lambda l,a: 'fd({0})'.format(l),
-            'f':lambda l,a: 'pu();fd({0});pd()'.format(l),
-            'R':lambda l,a: 'if r+dc<256: r+=dc;pencolor(r,g,b)',
-            'G':lambda l,a: 'if g+dc<256: g+=dc;pencolor(r,g,b)',
-            'B':lambda l,a: 'if b+dc<256: b+=dc;pencolor(r,g,b)',
-            '~':lambda l,a: 'right({0})'.format(randrange(-a,a))
-            }
     commands = ""
-    
     lengths = []
     i = 0
     while i < len(axiom):
@@ -129,7 +69,8 @@ def advanced_command_maker(axiom, angle, length):
                 i += axiom[i+2:].index(')') + 1
         elif c == '!':
             if axiom[i+1] == '(':
-                commands += 'thickness += int({0});pensize(thickness)\n'.format(axiom[i+2:i+2+axiom[i+2:].index(')')])
+                color = axiom[i+2:i+2+axiom[i+2:].index(')')]
+                commands += 'thickness += int({0});pensize(thickness)\n'.format(color)
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:
             commands += simple_commands[c](length, angle) + '\n'
@@ -137,85 +78,81 @@ def advanced_command_maker(axiom, angle, length):
                 lengths.append(length)
             elif c == ']':
                 length = lengths.pop(-1)
-
         i += 1
 
     return commands
 
-
-def niv(axiome1, regles, niveau):
-    if niveau==0:
-        axiomeniv=axiome1
+def generate_axiom(original_axiom, rules, level):
+    if level==0:
+        new_axiom=original_axiom
     else:
         
-        for i in range(niveau):
-            axiomeniv = ''
-            for carac in axiome1:
-                if carac in regles :
-                    for p, v in regles[carac]:
+        for i in range(level):
+            new_axiom = ''
+            for character in original_axiom:
+                if character in rules :
+                    for p, v in rules[character]:
                         if random() < p:
-                            axiomeniv += v
+                            new_axiom += v
                             break
 
                 else:
-                    axiomeniv += carac
+                    new_axiom += character
 
-            axiome1 = axiomeniv
-    return axiomeniv
+            original_axiom = new_axiom
+    return new_axiom
 
-def write_program_to_file(axiome, taille, angle, regles, niveau, out_file=None):
-    axiome2 = niv(axiome, regles, niveau)
-    code = "from turtle import *\nfrom random import randrange\npositions=[]\nscr = Screen()\ntracer(False)\nr,g,b=0,0,0\ndc=1\nscr.colormode(255)\nthickness={0}\n".format(niveau)
-    code +=advanced_command_maker(axiome2, angle, taille)
-    code += "scr.update()\nexitonclick()\n"
-
+def write_program_to_file(axiom, length, angle, rules, level, out_file=None):
+    axiom = generate_axiom(axiom, rules, level)
+    code = START_CODE.format(1)
+    code += advanced_command_maker(axiom, angle, length)
+    code += END_CODE
     if out_file:
         with open(out_file, "w+") as f:
             f.write(code)
-    print(code)
     exec(code)
+    #print(code)
 
-def nvRegles(regles) :
+def generate_rules(rules) :
     dico = {}
-    for regle in regles :
-        cle, e, valeur = regle.partition("=")
-        if '(' in cle and ')' in cle:
-            k,v = cle[0], float(cle[2:-1])
+    for rule in rules :
+        key, e, value = rule.partition("=")
+        if '(' in key and ')' in key:
+            k,v = key[0], float(key[2:-1])
             if k in dico:
-                dico[k].append([v, valeur])
+                dico[k].append([v, value])
             else:
-                dico[k] = [[v, valeur]]
+                dico[k] = [[v, value]]
 
         else:
-            dico[cle] = [[1.0, valeur]]
+            dico[key] = [[1.0, value]]
 
     return(dico)
 
 if __name__ == '__main__':
-    fichier_entree = None
-    fichier_sortie = None
+    file_input = None
+    file_output = None
     if len(argv) > 1:
         for i in range(1, len(argv)-1):
             if argv[i] == '-i':
                 try:
-                    fichier_entree = argv[i+1]
+                    file_input = argv[i+1]
                 except:
-                    print("here")
-                    error_out(11)
+                    handle_errors(11)
 
             if argv[i] == '-o':
                 try:
-                    fichier_sortie = argv[i+1]
+                    file_output = argv[i+1]
                 except:
-                    error_out(12)
+                    handle_errors(12)
 
     else:
-        fichier_entree = input("Fichier d'entree: ")
+        file_input = input("Fichier d'input: ")
 
-    axiome, angle, taille, niveau, regles = ouvrirFichier(fichier_entree)
-    # pprint(regles)
-    # pprint(nvRegles(regles))
-    write_program_to_file(axiome, taille, angle, nvRegles(regles), niveau, fichier_sortie)
+    axiom, angle, length, level, rules = open_settings_file(file_input)
+    # pprint(rules)
+    # pprint(generate_rules(rules))
+    write_program_to_file(axiom, length, angle, generate_rules(rules), level, file_output)
 
 
 
