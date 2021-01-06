@@ -6,7 +6,6 @@ from random import random, randrange
 from Error_Handling import handle_errors
 from File_Handling import open_settings_file 
 
-START_CENTER = True
 
 START_CODE = """
 from turtle import *
@@ -15,19 +14,22 @@ positions=[]
 scr = Screen()
 scr.colormode(255)
 tracer(False)
-r,g,b=0,0,0
-dc=1
+r,g,b=220,200,200
+dc=10
 thickness={0}
+pensize(thickness)
+w,h = screensize()
+if w<0: w=400
+if h<0: h=400
+screensize(w,h,'#090909')
+pencolor(r,g,b)
 """
 END_CODE = """
 scr.update()
 exitonclick()
 """
-
-if START_CENTER:
-    START_CODE += """
+START_CENTER = """
 lt(90)
-w,h = screensize()
 pu()
 goto(0, -h+10)
 pd()
@@ -69,8 +71,8 @@ def advanced_command_maker(axiom, angle, length):
                 i += axiom[i+2:].index(')') + 1
         elif c == '!':
             if axiom[i+1] == '(':
-                color = axiom[i+2:i+2+axiom[i+2:].index(')')]
-                commands += 'thickness += int({0});pensize(thickness)\n'.format(color)
+                something = axiom[i+2:i+2+axiom[i+2:].index(')')]
+                commands += 'thickness += int({0});pensize(thickness)\n'.format(something)
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:
             commands += simple_commands[c](length, angle) + '\n'
@@ -81,6 +83,22 @@ def advanced_command_maker(axiom, angle, length):
         i += 1
 
     return commands
+
+def write_program_to_file(axiom, length, angle, rules, level, out_file, width, centered):
+    if not width:
+        width = 1
+    elif width < 0:
+        width = 1
+    axiom = generate_axiom(axiom, rules, level)
+    code = START_CODE.format(width)
+    if centered: code += START_CENTER
+    code += advanced_command_maker(axiom, angle, length)
+    code += END_CODE
+    if out_file:
+        with open(out_file, "w+") as f:
+            f.write(code)
+    exec(code)
+    #print(code)
 
 def generate_axiom(original_axiom, rules, level):
     if level==0:
@@ -102,17 +120,6 @@ def generate_axiom(original_axiom, rules, level):
             original_axiom = new_axiom
     return new_axiom
 
-def write_program_to_file(axiom, length, angle, rules, level, out_file=None):
-    axiom = generate_axiom(axiom, rules, level)
-    code = START_CODE.format(1)
-    code += advanced_command_maker(axiom, angle, length)
-    code += END_CODE
-    if out_file:
-        with open(out_file, "w+") as f:
-            f.write(code)
-    exec(code)
-    #print(code)
-
 def generate_rules(rules) :
     dico = {}
     for rule in rules :
@@ -129,30 +136,49 @@ def generate_rules(rules) :
 
     return(dico)
 
+
+def get_input_file(argv, i):
+    if argv[i] == '-i':
+        try:
+            file_input = argv[i+1]
+            return file_input
+        except:
+            handle_errors(11)
+
+def get_output_file(argv, i):
+    if argv[i] == '-o':
+        try:
+            file_output = argv[i+1]
+            return file_output
+        except:
+            handle_errors(12)
+
+def get_inital_width(argv, i):
+    if argv[i] == '-s':
+        try:
+            width = int(argv[i+1])
+            return width
+        except:
+            handle_errors(13)
+
 if __name__ == '__main__':
     file_input = None
     file_output = None
+    width = None
+    centered = False
     if len(argv) > 1:
-        for i in range(1, len(argv)-1):
-            if argv[i] == '-i':
-                try:
-                    file_input = argv[i+1]
-                except:
-                    handle_errors(11)
-
-            if argv[i] == '-o':
-                try:
-                    file_output = argv[i+1]
-                except:
-                    handle_errors(12)
-
+        for i in range(1, len(argv)):
+            if argv[i] == '-c': centered = True
+            if not file_input : file_input  = get_input_file(argv, i)
+            if not file_output: file_output = get_output_file(argv, i)
+            if not width      : width       = get_inital_width(argv, i)
     else:
         file_input = input("Fichier d'input: ")
 
     axiom, angle, length, level, rules = open_settings_file(file_input)
     # pprint(rules)
     # pprint(generate_rules(rules))
-    write_program_to_file(axiom, length, angle, generate_rules(rules), level, file_output)
+    write_program_to_file(axiom, length, angle, generate_rules(rules), level, file_output, width, centered)
 
 
 

@@ -14,6 +14,7 @@ def handle_errors(id):
     error_10(id)
     error_11(id)
     error_12(id)
+    error_13(id)
     exit()
 
 def error_0(id):
@@ -67,4 +68,7 @@ def error_11(id):
 def error_12(id):
     if id == 12:
         print("le fichier de sorttie n'est pas specificie")
-        
+
+def error_13(id):
+    if id == 13:
+        print("Erreur sur l'entree du largeur du stylo")

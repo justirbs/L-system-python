@@ -1,0 +1,7 @@
+axiome = "+FX"
+regles = 
+"X=X+YF+"
+"Y=-FX-Y"
+angle = 90
+niveau = 15
+taille = 4

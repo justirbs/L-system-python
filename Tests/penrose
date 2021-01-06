@@ -1,0 +1,6 @@
+axiome = "F++F++F++F++F"
+regles = 
+"F=F++F++F*F-F++F"
+angle = 36
+niveau = 5
+taille = 5
