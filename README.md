@@ -13,7 +13,7 @@ then addition flags are available:
 -s <pen size>
 ```
 the input file must contain: 
-```
+```python
 axiome = ""
 regle = ""
 angle = <int>
@@ -22,7 +22,7 @@ to be valid
 with angle being an integer
 
 Additional settings can be added:
-```
+```python
 taille = <int>
 niveau = <int>
 ```

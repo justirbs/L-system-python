@@ -98,7 +98,23 @@ def write_program_to_file(axiom, length, angle, rules, level, out_file, width, c
         with open(out_file, "w+") as f:
             f.write(code)
     exec(code)
-    #print(code)
+    # print(code)
+    # print(axiom)
+
+def do_stuff(string, patterns):
+    res = []
+    for p, i in patterns:
+        if p in string:
+            b,f,a = string.partition(p)
+            if b:
+                res += do_stuff(b, patterns)
+            res += [f]
+            if a:
+                res += do_stuff(a, patterns)
+            break
+    else:
+        res = [string]
+    return res
 
 def generate_axiom(original_axiom, rules, level):
     if level==0:
@@ -107,15 +123,38 @@ def generate_axiom(original_axiom, rules, level):
         
         for i in range(level):
             new_axiom = ''
-            for character in original_axiom:
-                if character in rules :
-                    for p, v in rules[character]:
+            patterns = []
+            for key in rules.keys():
+                searching = True
+                while searching == True:
+                    ind = original_axiom.find(key)
+                    if ind != -1:
+                        for s,index in patterns:
+                            if ind == index:
+                                searching = False
+                                break
+                        else:
+                            patterns.append([original_axiom[ind:ind+len(key)],ind])
+                    else:
+                        searching = False
+                
+            patterns.sort(key=lambda x: len(x[0]), reverse=True)
+            splitted_axiom = do_stuff(original_axiom, patterns)
+            for string in splitted_axiom:
+                if string in rules:
+                    for p, v in rules[string]:
                         if random() < p:
                             new_axiom += v
                             break
-
                 else:
-                    new_axiom += character
+                    for character in string:
+                        if character in rules :
+                            for p, v in rules[character]:
+                                if random() < p:
+                                    new_axiom += v
+                                    break
+                        else:
+                            new_axiom += character
 
             original_axiom = new_axiom
     return new_axiom
@@ -124,8 +163,10 @@ def generate_rules(rules) :
     dico = {}
     for rule in rules :
         key, e, value = rule.partition("=")
+        key = key.replace('<','').replace('>','')
         if '(' in key and ')' in key:
-            k,v = key[0], float(key[2:-1])
+            i = key.index('(')
+            k,v = key[:i], float(key[i+1:key.index(')')])
             if k in dico:
                 dico[k].append([v, value])
             else:
@@ -135,7 +176,6 @@ def generate_rules(rules) :
             dico[key] = [[1.0, value]]
 
     return(dico)
-
 
 def get_input_file(argv, i):
     if argv[i] == '-i':
@@ -176,8 +216,8 @@ if __name__ == '__main__':
         file_input = input("Fichier d'input: ")
 
     axiom, angle, length, level, rules = open_settings_file(file_input)
-    # pprint(rules)
-    # pprint(generate_rules(rules))
+    # pprint(axiom)
+    pprint(generate_rules(rules))
     write_program_to_file(axiom, length, angle, generate_rules(rules), level, file_output, width, centered)
 
 

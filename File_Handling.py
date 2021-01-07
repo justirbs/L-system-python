@@ -1,3 +1,5 @@
+from Error_Handling import handle_errors
+
 def verify(axiom, angle, length, level, rules):
     if not axiom:
         handle_errors(0)
@@ -13,7 +15,6 @@ def verify(axiom, angle, length, level, rules):
         length = 4
     if not level:
         level = 1
-
     return axiom, angle, length, level, rules
 
 def open_settings_file(file) :
