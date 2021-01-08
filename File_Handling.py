@@ -1,7 +1,8 @@
 from Error_Handling import handle_errors
 
+#  verifie que les parametres sont bien define
 def verify(axiom, angle, length, level, rules):
-    if not axiom:
+    if not axiom:                                                                                                       #
         handle_errors(0)
     if not rules:
         handle_errors(1)
@@ -17,8 +18,9 @@ def verify(axiom, angle, length, level, rules):
         level = 1
     return axiom, angle, length, level, rules
 
+#  ouvier le fichier et recuperer les parametres 
 def open_settings_file(file) :
-    with open(file, "r") as f :
+    with open(file, "r") as f :                                                                                         #
         lines = f.readlines()
     axiom, angle, length, level, rules = None,None,None,None,None
     for i, line in enumerate(lines):
@@ -31,6 +33,7 @@ def open_settings_file(file) :
     axiom, angle, length, level, rules = verify(axiom, angle, length, level, rules)
     return(axiom, angle, length, level, rules)
 
+#  si 'axiome' dans le ligne retourne l'axiome
 def get_axiom(line):
     if "axiom" in line :
         if '=' not in line: 
@@ -39,6 +42,7 @@ def get_axiom(line):
             axiom = line.split("=")[1].replace('"', "").replace(" ", "").strip()
             return axiom
 
+#  si 'angle' dans le ligne retourne l'angle
 def get_angle(line):
     if "angle" in line :
         if '=' not in line: 
@@ -50,6 +54,7 @@ def get_angle(line):
             except ValueError: 
                 handle_errors(8)
 
+#  si 'taille' dans le ligne retourne l'taille
 def get_length(line):
     if "taille" in line :
         if '=' not in line: 
@@ -61,6 +66,7 @@ def get_length(line):
             except ValueError: 
                 handle_errors(9)
 
+#  si 'niveau' dans le ligne retourne l'niveau
 def get_level(line):
     if "niveau" in line :
         if '=' not in line: 
@@ -72,11 +78,13 @@ def get_level(line):
             except ValueError: 
                 handle_errors(10)
 
+#  si 'regle' dans le ligne retourne l'regle
 def get_rule(line):
     if "regle" in line and '"' in line :
         rules = [line.partition("=")[2].replace('"', "").replace(" ", "").strip()]
         return rules
 
+#  si 'regles' dans le ligne retourne l'regles
 def get_rules(lines, line, i):
     if "regles" in line :
         j = i+1

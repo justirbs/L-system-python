@@ -1,5 +1,8 @@
 from sys import exit
 
+#  ce fichier gere les erreurs qui peut se
+#  produit dans le program.
+
 def handle_errors(id):
     error_0(id)
     error_1(id)
