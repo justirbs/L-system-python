@@ -2,7 +2,7 @@ from Error_Handling import handle_errors
 
 #  verifie que les parametres sont bien define
 def verify(axiom, angle, length, level, rules):
-    if not axiom:                                                                                                       #
+    if not axiom:                                                                                   #
         handle_errors(0)
     if not rules:
         handle_errors(1)
@@ -20,7 +20,7 @@ def verify(axiom, angle, length, level, rules):
 
 #  ouvier le fichier et recuperer les parametres 
 def open_settings_file(file) :
-    with open(file, "r") as f :                                                                                         #
+    with open(file, "r") as f :                                                                      #
         lines = f.readlines()
     axiom, angle, length, level, rules = None,None,None,None,None
     for i, line in enumerate(lines):
