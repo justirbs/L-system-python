@@ -55,7 +55,7 @@ simple_commands = {
         '~':lambda l,a: 'right({0})'.format(randrange(-a,a))
         }
 
-#  genere tout les commandes turtle a effectuer
+#  fonction qui cree les commandes turtle 
 def advanced_command_maker(axiom, angle, length):
     commands = ""                                                                                   #
     lengths = []
@@ -84,6 +84,8 @@ def advanced_command_maker(axiom, angle, length):
         i += 1
     return commands
 
+
+
 #  fonction main 'secondaire' 
 def generate_commands(axiom, length, angle, rules, level, width, centered):
     if not width:                                                                                   # 
@@ -96,6 +98,8 @@ def generate_commands(axiom, length, angle, rules, level, width, centered):
     code += advanced_command_maker(axiom, angle, length)                                            # |
     code += END_CODE                                                                                # |
     return code
+
+
 
 #  fonction recursive qui parse l'axiom pour les parties fondemental
 #  could be optimised a bit
@@ -113,6 +117,8 @@ def partition_axiom(string, patterns):
     else:
         res = [string]
     return res
+
+
 
 #  partion l'axiom dans ces parties fondemental
 def create_partitioned_axiom(rules, axiom):
@@ -134,6 +140,8 @@ def create_partitioned_axiom(rules, axiom):
     patterns.sort(key=lambda x: len(x[0]), reverse=True)                                            # trier tout les correspondances en function de son index dans l'axiom
     return partition_axiom(axiom, patterns)                                                         # ╰─> remettre l'axiom dans l'ordre  
 
+
+
 #  genere le prochain axiom
 def create_next_axiom(splitted_axiom, rules):
     axiom = ''                                                                                      #
@@ -154,6 +162,8 @@ def create_next_axiom(splitted_axiom, rules):
                     axiom += character                                                              # |||| si non ajouter le caractere
     return axiom
 
+
+
 #  genere le generation du axiome
 def generate_axiom(original_axiom, rules, level):
     if level==0:                                                                                    # 
@@ -166,6 +176,8 @@ def generate_axiom(original_axiom, rules, level):
 
             original_axiom = new_axiom
     return new_axiom
+
+
 
 #  genere le dictionnaire des regles
 def generate_rules(rules) :
@@ -185,6 +197,8 @@ def generate_rules(rules) :
 
     return(dico)
 
+
+
 #  gere le fichier d'entree
 def get_input_file(argv, i):
     if argv[i] == '-i':
@@ -193,6 +207,8 @@ def get_input_file(argv, i):
             return file_input
         except:
             handle_errors(11)
+
+
 
 #  gere le fichier de sortie
 def get_output_file(argv, i):
@@ -203,6 +219,8 @@ def get_output_file(argv, i):
         except:
             handle_errors(12)
 
+
+
 #  gere la largeur initial du stylo
 def get_inital_width(argv, i):
     if argv[i] == '-s':
@@ -211,6 +229,8 @@ def get_inital_width(argv, i):
             return width
         except:
             handle_errors(13)
+
+
 
 #  main 
 if __name__ == '__main__':
