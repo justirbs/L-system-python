@@ -87,12 +87,11 @@ def advanced_command_maker(axiom, angle, length):
 
 
 #  fonction main 'secondaire' 
-def generate_commands(axiom, length, angle, rules, level, width, centered):
+def generate_commands(axiom, length, angle, width, centered):
     if not width:                                                                                   # 
         width = 1                                                                                   # si l'argument -s n'est pas definer mettre la largeur du style a 1
     elif width < 0:
         width = 1
-    axiom = generate_axiom(axiom, rules, level)                                                     # genere l'axiom
     code = START_CODE.format(width)                                                                 # | cree les commands turtle
     if centered: code += START_CENTER                                                               # | 
     code += advanced_command_maker(axiom, angle, length)                                            # |
@@ -248,7 +247,9 @@ if __name__ == '__main__':
         file_input = input("Fichier d'input: ")                                                     # |
 
     axiom, angle, length, level, rules = open_settings_file(file_input)                             # recupere les parametres dans le fichier
-    code = generate_commands(axiom, length, angle, generate_rules(rules), level, width, centered)   # cree les commandes turtle
+    rules = generate_rules(rules)
+    axiom = generate_axiom(axiom, rules, level)                                                     # genere l'axiom
+    code = generate_commands(axiom, length, rules, width, centered)                                 # cree les commandes turtle
     if file_output:                                                                                 # | si fichier de sortie
         with open(file_output, "w+") as f:                                                          # | ecrit les commandes dans le fichier
             f.write(code)                                                                           # | 
