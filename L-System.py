@@ -72,8 +72,8 @@ def advanced_command_maker(axiom, angle, length):
                 i += axiom[i+2:].index(')') + 1
         elif c == '!':                                                                              # changer le largeur du stylo
             if axiom[i+1] == '(':
-                something = axiom[i+2:i+2+axiom[i+2:].index(')')]                                   # recupere le nombre entre les parentheses
-                commands += 'thickness += int({0});pensize(thickness)\n'.format(something)
+                size = axiom[i+2:i+2+axiom[i+2:].index(')')]                                   # recupere le nombre entre les parentheses
+                commands += 'thickness += int({0});pensize(thickness)\n'.format(size)
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:                                                                  # le command est simple ( 1 caracter )
             commands += simple_commands[c](length, angle) + '\n'
