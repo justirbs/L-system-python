@@ -64,23 +64,23 @@ def advanced_command_maker(axiom, angle, length):
         c = axiom[i]
         if c == 'l':                                                                                # changer le taille
             if axiom[i+1] == '(':
-                length *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])                              # recupere le nombre entre les parentheses
+                length *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])                              # changer le taille en fonction de la nombre entre les parentheses
                 i += axiom[i+2:].index(')') + 1
         elif c == 't':                                                                              # changer l'angle  
             if axiom[i+1] == '(':
-                angle *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])                               # recupere le nombre entre les parentheses
+                angle *= float(axiom[i+2:i+2+axiom[i+2:].index(')')])                               # changer l'angle en fonction de la nombre entre les parentheses
                 i += axiom[i+2:].index(')') + 1
         elif c == '!':                                                                              # changer le largeur du stylo
             if axiom[i+1] == '(':
-                size = axiom[i+2:i+2+axiom[i+2:].index(')')]                                   # recupere le nombre entre les parentheses
-                commands += 'thickness += int({0});pensize(thickness)\n'.format(size)
+                size = axiom[i+2:i+2+axiom[i+2:].index(')')]                                        # recupere le nombre entre les parentheses
+                commands += 'thickness += int({0});pensize(thickness)\n'.format(size)               # ajouter code à commandes pour changer le largeur
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:                                                                  # le command est simple ( 1 caracter )
-            commands += simple_commands[c](length, angle) + '\n'
-            if c == '[':
-                lengths.append(length)
-            elif c == ']':
-                length = lengths.pop(-1)
+            commands += simple_commands[c](length, angle) + '\n'                                    # ajouter le command correspond a le caracter
+            if c == '[':                                                                            # | code pour remettre le taille quand on change de position
+                lengths.append(length)                                                              # | 
+            elif c == ']':                                                                          # | 
+                length = lengths.pop(-1)                                                            # | 
         i += 1
     return commands
 
