@@ -249,7 +249,7 @@ if __name__ == '__main__':
     axiom, angle, length, level, rules = open_settings_file(file_input)                             # recupere les parametres dans le fichier
     rules = generate_rules(rules)
     axiom = generate_axiom(axiom, rules, level)                                                     # genere l'axiom
-    code = generate_commands(axiom, length, rules, width, centered)                                 # cree les commandes turtle
+    code = generate_commands(axiom, length, angle, width, centered)                                 # cree les commandes turtle
     if file_output:                                                                                 # | si fichier de sortie
         with open(file_output, "w+") as f:                                                          # | ecrit les commandes dans le fichier
             f.write(code)                                                                           # | 
