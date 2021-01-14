@@ -4,4 +4,4 @@ regles =
 "b=bb+b-a+b-a-bb"
 angle = 60
 taille = 50
-niveau = 1
+niveau = 8

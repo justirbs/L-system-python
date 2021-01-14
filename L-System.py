@@ -6,7 +6,7 @@ from random import random, randrange
 from Error_Handling import handle_errors
 from File_Handling import open_settings_file 
 
-setrecursionlimit(100000)
+setrecursionlimit(100000) # fixes recursion limit problem
 
 
 START_CODE = """
@@ -17,7 +17,7 @@ scr = Screen()
 scr.colormode(255)
 tracer(False)
 r,g,b=220,200,200
-dc=10
+dc={1}
 thickness={0}
 pensize(thickness)
 w,h = screensize()
@@ -89,12 +89,16 @@ def advanced_command_maker(axiom, angle, length):
 
 
 #  fonction main 'secondaire' 
-def generate_commands(axiom, length, angle, width, centered):
+def generate_commands(axiom, length, angle, width, centeredi, dc):
     if not width:                                                                                   # 
         width = 1                                                                                   # si l'argument -s n'est pas definer mettre la largeur du style a 1
     elif width < 0:
         width = 1
-    code = START_CODE.format(width)                                                                 # | cree les commands turtle
+    if not dc:
+        dc = 5
+    elif dc < 0:
+        dc = 5
+    code = START_CODE.format(width, dc)                                                                 # | cree les commands turtle
     if centered: code += START_CENTER                                                               # | 
     code += advanced_command_maker(axiom, angle, length)                                            # |
     code += END_CODE                                                                                # |
@@ -219,8 +223,6 @@ def get_output_file(argv, i):
         except:
             handle_errors(12)
 
-
-
 #  gere la largeur initial du stylo
 def get_inital_width(argv, i):
     if argv[i] == '-s':
@@ -230,6 +232,15 @@ def get_inital_width(argv, i):
         except:
             handle_errors(13)
 
+#  gere la largeur initial du stylo
+def get_inital_dc(argv, i):
+    if argv[i] == '-d':
+        try:
+            dc = int(argv[i+1])
+            return dc 
+        except:
+            handle_errors(14)
+
 
 
 #  main 
@@ -237,6 +248,7 @@ if __name__ == '__main__':
     file_input = None                                                                               #
     file_output = None
     width = None
+    dc = None
     centered = False
     if len(argv) > 1:                                                                               # | gere les argument du command ligne
         for i in range(1, len(argv)):                                                               # |
@@ -244,13 +256,14 @@ if __name__ == '__main__':
             if not file_input : file_input  = get_input_file(argv, i)                               # |
             if not file_output: file_output = get_output_file(argv, i)                              # |
             if not width      : width       = get_inital_width(argv, i)                             # |
+            if not dc         : dc          = get_inital_dc(argv, i)
     else:                                                                                           # |
         file_input = input("Fichier d'input: ")                                                     # |
 
     axiom, angle, length, level, rules = open_settings_file(file_input)                             # recupere les parametres dans le fichier
     rules = generate_rules(rules)
     axiom = generate_axiom(axiom, rules, level)                                                     # genere l'axiom
-    code = generate_commands(axiom, length, angle, width, centered)                                 # cree les commandes turtle
+    code = generate_commands(axiom, length, angle, width, centered, dc)                                 # cree les commandes turtle
     if file_output:                                                                                 # | si fichier de sortie
         with open(file_output, "w+") as f:                                                          # | ecrit les commandes dans le fichier
             f.write(code)                                                                           # | 

@@ -18,6 +18,7 @@ def handle_errors(id):
     error_11(id)
     error_12(id)
     error_13(id)
+    error_14(id)
     exit()
 
 def error_0(id):
@@ -75,3 +76,7 @@ def error_12(id):
 def error_13(id):
     if id == 13:
         print("Erreur sur l'entree du largeur du stylo")
+
+def error_14(id):
+    if id == 13:
+        print("Erreur sur l'entree du differnce du couleurs")
