@@ -1,0 +1,5 @@
+axiome = "CFX"
+regle = "X=l(.66)[-FX]C+FX"
+angle = 40
+niveau = 12
+taille = 256

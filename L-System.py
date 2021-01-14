@@ -65,6 +65,7 @@ def advanced_command_maker(axiom, angle, length):
     commands = ""                                                                                   #
     lengths = []
     i = 0
+    color_index = 0
     while i < len(axiom):                                                                           # pour chaque caractere dans l'axiom
         c = axiom[i]
         if c == 'l':                                                                                # changer le taille
@@ -81,7 +82,8 @@ def advanced_command_maker(axiom, angle, length):
                 commands += 'thickness += int({0});pensize(thickness)\n'.format(size)               # ajouter code à commandes pour changer le largeur
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:                                                                  # le command est simple ( 1 caracter )
-            commands += simple_commands[c](length, angle, i) + '\n'                                    # ajouter le command correspond a le caracter
+            commands += simple_commands[c](length, angle, color_index) + '\n'                                    # ajouter le command correspond a le caracter
+            if c == 'C': color_index += 1
             if c == '[':                                                                            # | code pour remettre le taille quand on change de position
                 lengths.append(length)                                                              # | 
             elif c == ']':                                                                          # | 
@@ -92,7 +94,7 @@ def advanced_command_maker(axiom, angle, length):
 
 
 #  fonction main 'secondaire' 
-def generate_commands(axiom, length, angle, width, centeredi, dc):
+def generate_commands(axiom, length, angle, level, width, centeredi, dc):
     if not width:                                                                                   # 
         width = 1                                                                                   # si l'argument -s n'est pas definer mettre la largeur du style a 1
     elif width < 0:
@@ -102,7 +104,7 @@ def generate_commands(axiom, length, angle, width, centeredi, dc):
     elif dc < 0:
         dc = 5
     colours = get_colors()
-    code = START_CODE.format(width, dc, create_blended_colors(5, colours))                                                                 # | cree les commands turtle
+    code = START_CODE.format(width, dc, create_blended_colors(level, colours))                                                                 # | cree les commands turtle
     if centered: code += START_CENTER                                                               # | 
     code += advanced_command_maker(axiom, angle, length)                                            # |
     code += END_CODE                                                                                # |
@@ -267,7 +269,7 @@ if __name__ == '__main__':
     axiom, angle, length, level, rules = open_settings_file(file_input)                             # recupere les parametres dans le fichier
     rules = generate_rules(rules)
     axiom = generate_axiom(axiom, rules, level)                                                     # genere l'axiom
-    code = generate_commands(axiom, length, angle, width, centered, dc)                                 # cree les commandes turtle
+    code = generate_commands(axiom, length, angle, level, width, centered, dc)                                 # cree les commandes turtle
     if file_output:                                                                                 # | si fichier de sortie
         with open(file_output, "w+") as f:                                                          # | ecrit les commandes dans le fichier
             f.write(code)                                                                           # | 
