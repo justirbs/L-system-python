@@ -2,5 +2,5 @@ axiome = "F"
 regles = 
 "F=-F++F-"
 angle = 45
-niveau = 16
-taille = 2
+niveau = 15
+taille = 3

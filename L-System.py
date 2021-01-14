@@ -1,10 +1,12 @@
 from turtle import *
 from pprint import pprint
-from sys import exit, argv
+from sys import exit, argv, setrecursionlimit
 from random import random, randrange
 
 from Error_Handling import handle_errors
 from File_Handling import open_settings_file 
+
+setrecursionlimit(100000)
 
 
 START_CODE = """
@@ -99,7 +101,6 @@ def generate_commands(axiom, length, angle, width, centered):
     return code
 
 
-
 #  fonction recursive qui parse l'axiom pour les parties fondemental
 #  could be optimised a bit
 def partition_axiom(string, patterns):
@@ -110,7 +111,7 @@ def partition_axiom(string, patterns):
             if b:
                 res += partition_axiom(b, patterns)
             res += [f]
-            if a:
+            if a: 
                 res += partition_axiom(a, patterns)
             break
     else:
