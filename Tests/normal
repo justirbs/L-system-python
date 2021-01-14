@@ -1,7 +1,7 @@
-axiome = "X"
+axiome = "CX"
 regles = 
-"F=rFrF"
-"X=RF[+X]F[-X]+X"
+"F=FF"
+"X=FC[+X]FC[-X]+X"
 angle = 20
-niveau = 6
+niveau = 7
 taille = 3

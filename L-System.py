@@ -5,6 +5,7 @@ from random import random, randrange
 
 from Error_Handling import handle_errors
 from File_Handling import open_settings_file 
+from Better_Colours import * 
 
 setrecursionlimit(100000) # fixes recursion limit problem
 
@@ -25,6 +26,7 @@ if w<0: w=400
 if h<0: h=400
 screensize(w,h,'#090909')
 pencolor(r,g,b)
+colors = {2}
 """
 END_CODE = """
 scr.update()
@@ -39,22 +41,23 @@ pd()
 
 #  les commands simple ( 1 caracter )
 simple_commands = {
-        'a':lambda l,a: 'pd();fd({0})'.format(l),
-        'b':lambda l,a: 'pu();fd({0})'.format(l),
-        '+':lambda l,a: 'right({0})'.format(a),
-        '-':lambda l,a: 'left({0})'.format(a),
-        '*':lambda l,a: 'right(180)',
-        '[':lambda l,a: 'positions.append([heading(), pos(), thickness])',
-        ']':lambda l,a: 'h,p,t = positions.pop(-1)\nseth(h);pu();setpos(p);pd();thickness=t;pensize(thickness)',
-        'F':lambda l,a: 'fd({0})'.format(l),
-        'f':lambda l,a: 'pu();fd({0});pd()'.format(l),
-        'R':lambda l,a: 'if r+dc<256: r+=dc;pencolor(r,g,b)',
-        'G':lambda l,a: 'if g+dc<256: g+=dc;pencolor(r,g,b)',
-        'B':lambda l,a: 'if b+dc<256: b+=dc;pencolor(r,g,b)',
-        'r':lambda l,a: 'if r-dc>=0: r-=dc;pencolor(r,g,b)',
-        'g':lambda l,a: 'if g-dc>=0: g-=dc;pencolor(r,g,b)',
-        'b':lambda l,a: 'if b-dc>=0: b-=dc;pencolor(r,g,b)',
-        '~':lambda l,a: 'right({0})'.format(randrange(-a,a))
+        'a':lambda l,a,i: 'pd();fd({0})'.format(l),
+        'b':lambda l,a,i: 'pu();fd({0})'.format(l),
+        '+':lambda l,a,i: 'right({0})'.format(a),
+        '-':lambda l,a,i: 'left({0})'.format(a),
+        '*':lambda l,a,i: 'right(180)',
+        '[':lambda l,a,i: 'positions.append([heading(), pos(), thickness])',
+        ']':lambda l,a,i: 'h,p,t = positions.pop(-1)\nseth(h);pu();setpos(p);pd();thickness=t;pensize(thickness)',
+        'F':lambda l,a,i: 'fd({0})'.format(l),
+        'f':lambda l,a,i: 'pu();fd({0});pd()'.format(l),
+        'R':lambda l,a,i: 'if r+dc<256: r+=dc;pencolor(r,g,b)',
+        'G':lambda l,a,i: 'if g+dc<256: g+=dc;pencolor(r,g,b)',
+        'B':lambda l,a,i: 'if b+dc<256: b+=dc;pencolor(r,g,b)',
+        'r':lambda l,a,i: 'if r-dc>=0: r-=dc;pencolor(r,g,b)',
+        'g':lambda l,a,i: 'if g-dc>=0: g-=dc;pencolor(r,g,b)',
+        'b':lambda l,a,i: 'if b-dc>=0: b-=dc;pencolor(r,g,b)',
+        '~':lambda l,a,i: 'right({0})'.format(randrange(-a,a)),
+        'C':lambda l,a,i: 'pencolor(colors[{0}%len(colors)])'.format(i)
         }
 
 #  fonction qui cree les commandes turtle 
@@ -78,7 +81,7 @@ def advanced_command_maker(axiom, angle, length):
                 commands += 'thickness += int({0});pensize(thickness)\n'.format(size)               # ajouter code à commandes pour changer le largeur
                 i += axiom[i+2:].index(')') + 1
         elif c in simple_commands:                                                                  # le command est simple ( 1 caracter )
-            commands += simple_commands[c](length, angle) + '\n'                                    # ajouter le command correspond a le caracter
+            commands += simple_commands[c](length, angle, i) + '\n'                                    # ajouter le command correspond a le caracter
             if c == '[':                                                                            # | code pour remettre le taille quand on change de position
                 lengths.append(length)                                                              # | 
             elif c == ']':                                                                          # | 
@@ -98,7 +101,8 @@ def generate_commands(axiom, length, angle, width, centeredi, dc):
         dc = 5
     elif dc < 0:
         dc = 5
-    code = START_CODE.format(width, dc)                                                                 # | cree les commands turtle
+    colours = get_colors()
+    code = START_CODE.format(width, dc, create_blended_colors(5, colours))                                                                 # | cree les commands turtle
     if centered: code += START_CENTER                                                               # | 
     code += advanced_command_maker(axiom, angle, length)                                            # |
     code += END_CODE                                                                                # |
@@ -268,7 +272,7 @@ if __name__ == '__main__':
         with open(file_output, "w+") as f:                                                          # | ecrit les commandes dans le fichier
             f.write(code)                                                                           # | 
 
-    pprint(code)                                                                                    # afficher les commands turtle 
+    # pprint(code)                                                                                    # afficher les commands turtle 
     exec(code)                                                                                      # executer les commands turtle
 
 
