@@ -7,6 +7,53 @@ from Error_Handling import handle_errors
 from File_Handling import open_settings_file 
 from Better_Colours import * 
 
+HELP = """
+
+██       ███████ ██    ██ ███████ ████████ ███████ ███    ███ 
+██       ██       ██  ██  ██         ██    ██      ████  ████ 
+██ █████ ███████   ████   ███████    ██    █████   ██ ████ ██ 
+██            ██    ██         ██    ██    ██      ██  ██  ██ 
+███████  ███████    ██    ███████    ██    ███████ ██      ██ 
+
+Usage: python L-System [OPTION]... [FILE]...
+Creates a script that will genenerate a l-system 
+from a given file
+
+Arguments.
+    -h                      display this help
+    -i { path to file }     use file as input
+    -o { path to file }     use file as output
+    -c                      moves turtle to center bottom
+    -s { integer }          set the turtle pen width
+    -d { integer }          set the color increment
+
+The input file must include:
+    axiome = ""
+    regle = ""
+    angle = int
+
+    Note: depending on whether there is 1 or more than 1 rule
+    'regle' becomes 'regles' and the rules are on the next line.
+
+The following are command characters:
+    a : pen down and move forward 'taille' steps
+    b : pen up and move forward 'taille' steps
+    + : turn right 'angle' degrees
+    - : turn left 'angle' degrees
+    F : move forward 'taille' steps
+    r : change red value by -dc
+    g : change green value by -dc
+    b : change blue value by -dc
+    R : change red value by dc
+    G : change green value by dc
+    B : change blue value by dc
+    l : change line length : l(.5) = half line length : l(2) = double line length
+    t : change pen size  : l(.5) = half pen size  : l(2) = double pen size 
+    ! : change angle  : l(.5) = half angle  : l(2) = double angle 
+    C : change color based on the color gradient
+
+"""
+
 setrecursionlimit(100000) # fixes recursion limit problem
 
 
@@ -263,6 +310,9 @@ if __name__ == '__main__':
             if not file_output: file_output = get_output_file(argv, i)                              # |
             if not width      : width       = get_inital_width(argv, i)                             # |
             if not dc         : dc          = get_inital_dc(argv, i)
+            if argv[i] == '-h' or argv[i] == '--help':
+                print(HELP)
+                exit()
     else:                                                                                           # |
         file_input = input("Fichier d'input: ")                                                     # |
 
