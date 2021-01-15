@@ -313,7 +313,7 @@ if __name__ == '__main__':
             if argv[i] == '-h' or argv[i] == '--help':
                 print(HELP)
                 exit()
-    else:                                                                                           # |
+    if file_input == None:                                                                                           # |
         file_input = input("Fichier d'input: ")                                                     # |
 
     axiom, angle, length, level, rules = open_settings_file(file_input)                             # recupere les parametres dans le fichier
