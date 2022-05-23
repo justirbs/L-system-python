@@ -182,7 +182,6 @@ def advanced_command_maker(axiom, angle, length):
             if color_mode == 0:
                 commands += 'pencolor({0})\n'.format(str(get_indexed_color(depth, colors)))
             elif color_mode == 1:
-                x,y = 
                 commands += 'pencolor({0})\n'.format()
         elif c in simple_commands:
             commands += simple_commands[c](length, angle) + '\n'
