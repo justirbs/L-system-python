@@ -1,7 +1,0 @@
-axiome = "!(0.2)F-a-a"
-regles = 
-"F=F-a+F+a-F"
-"a=aai"
-angle = 120
-niveau = 3
-taille = 30
